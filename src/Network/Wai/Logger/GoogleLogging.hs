@@ -2,6 +2,7 @@
 
 module Network.Wai.Logger.GoogleLogging where
 
+import Data.Monoid ((<>))
 import Data.IP (fromHostAddress, fromIPv4, fromIPv6, fromHostAddress6)
 import Network.Socket (SockAddr(..), HostAddress6, HostAddress)
 import GHC.Int (Int64)
@@ -53,7 +54,7 @@ fillLogEntry lat currentTime req res =
                                       & Logging.httprUserAgent .~ (Text.decodeUtf8 <$> Wai.requestHeaderUserAgent req))
                                       & Logging.httprStatus .~ (pure (fromIntegral (statusCode (Wai.responseStatus res)))))
                                       & Logging.httprRequestSize .~ (pure (rblToInt (Wai.requestBodyLength req))))
-                                      & Logging.httprRequestURL .~ (pure (Text.decodeUtf8 (Wai.rawPathInfo req))))
+                                      & Logging.httprRequestURL .~ (pure (Text.decodeUtf8 (Wai.rawPathInfo req <> Wai.rawQueryString req))))
                                       & Logging.httprRequestMethod .~ (pure (Text.decodeUtf8 (Wai.requestMethod req))))
 
 
